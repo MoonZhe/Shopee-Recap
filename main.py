@@ -30,10 +30,9 @@ def main():
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
+        try:
+            response = requests.request("GET", url, headers=headers)
         
-        response = requests.request("GET", url, headers=headers)
-        
-        if response.status_code == 200:
             responseData = response.json()
             
             offset = responseData["data"]["next_offset"]
@@ -56,8 +55,9 @@ def main():
                     finalTotal += float(f"{c['info_card']['final_total'] / 100000:.2f}")
                 
             currentYearItems.append(currResponse)
-        else:
-            print("error")
+            
+        except requests.exceptions.RequestException as err:
+            print("Error occured while processing: ", err)
             
     combined_list = [item for sublist in currentYearItems for item in sublist]
     with open('all_purchases.json', 'w') as file:
